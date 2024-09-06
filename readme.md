@@ -1,4 +1,4 @@
-<img src="https://telegra.ph/file/c0e014ff34f34d1056627.png" align="right" width="200" height="200"/>
+<img src="https://telegra.ph/file/56b248312dad1a4e49f16.jpg" align="right" width="200" height="200"/>
 
 # Duru Music Bot <img src="https://img.shields.io/github/v/release/IamDuru/DuruMusicBot?color=black&logo=github&logoColor=black&style=social" alt="RELEASE">
 
