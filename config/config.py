@@ -46,7 +46,7 @@ EXTRA_PLUGINS = getenv(
 
 EXTRA_PLUGINS_REPO = getenv(
     "EXTRA_PLUGINS_REPO",
-    "https://github.com/IamDuru/Extra-Plugin(DM)",
+    "https://github.com/IamDuru/Extra-Plugin-DM",
 )
 # Fill here the external plugins repo where plugins that you want to load
 
