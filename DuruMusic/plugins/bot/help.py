@@ -16,7 +16,7 @@ from DuruMusic.utils.inline.help import private_help_panel
 ### Command
 HELP_COMMAND = get_command("HELP_COMMAND")
 
-COLUMN_SIZE = 4  # number of  button height
+COLUMN_SIZE = 16  # number of  button height
 NUM_COLUMNS = 3  # number of button width
 
 
