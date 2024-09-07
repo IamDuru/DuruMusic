@@ -1,4 +1,4 @@
-
+"""
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -71,3 +71,5 @@ async def on_left_chat_member(_, message: Message):
             await userbot.leave_chat(chat_id)
     except Exception as e:
         print(f"Error: {e}")
+
+"""
