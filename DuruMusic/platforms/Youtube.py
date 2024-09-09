@@ -5,14 +5,16 @@ import random
 import re
 from typing import Union
 
+import config
 import httpx
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from youtubesearchpython.__future__ import VideosSearch
 
-from DuruMusic.utils.exceptions import DownloadError
+
 from DuruMusic.utils.formatters import time_to_seconds
+from DuruMusic.utils.database import is_on_off
 
 
 def cookies():
@@ -36,57 +38,6 @@ async def shell_cmd(cmd):
         else:
             return errorz.decode("utf-8")
     return out.decode("utf-8")
-
-
-async def api_download(vidid, video=False):
-    API = "https://api.cobalt.tools/api/json"
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-    }
-
-    if video:
-        path = os.path.join("downloads", f"{vidid}.mp4")
-        data = {"url": f"https://www.youtube.com/watch?v={vidid}", "vQuality": "480"}
-    else:
-        path = os.path.join("downloads", f"{vidid}.m4a")
-        data = {
-            "url": f"https://www.youtube.com/watch?v={vidid}",
-            "isAudioOnly": "True",
-            "aFormat": "opus",
-        }
-
-    max_retries = 2  # Maximum number of attempts
-    success = False
-
-    for attempt in range(max_retries):
-        try:
-            async with httpx.AsyncClient(http2=True) as client:
-                response = await client.post(API, headers=headers, json=data)
-                response.raise_for_status()
-
-                results = response.json().get("url")
-                if not results:
-                    raise ValueError("No download URL found in the response")
-
-                cmd = f"yt-dlp '{results}' -o '{path}'"
-                await shell_cmd(cmd)
-
-                if os.path.isfile(path):
-                    success = True
-                    break
-
-        except (httpx.RequestError, httpx.HTTPStatusError, ValueError):
-            continue
-
-    if not success:
-        raise DownloadError(
-            "The song has not been downloaded yet, possibly due to an API error."
-        )
-
-    return path
-
 
 class YouTubeAPI:
     def __init__(self):
@@ -385,25 +336,15 @@ class YouTubeAPI:
             x.download([link])
 
         if songvideo:
-            # await loop.run_in_executor(None, song_video_dl)
-            # fpath = f"downloads/{title}.mp4"
-            fpath = await loop.run_in_executor(
-                None, lambda: asyncio.run(api_download(vidid, video=True))
-            )
+            await loop.run_in_executor(None, song_video_dl)
+            fpath = f"downloads/{title}.mp4"
             return fpath
         elif songaudio:
-            # await loop.run_in_executor(None, song_audio_dl)
-            # fpath = f"downloads/{title}.mp3"
-            fpath = await loop.run_in_executor(
-                None, lambda: asyncio.run(api_download(vidid))
-            )
+            await loop.run_in_executor(None, song_audio_dl)
+            fpath = f"downloads/{title}.mp3"
             return fpath
         elif video:
-            direct = True
-            downloaded_file = await loop.run_in_executor(
-                None, lambda: asyncio.run(api_download(vidid, video=True))
-            )
-            """if await is_on_off(config.YTDOWNLOADER):
+            if await is_on_off(config.YTDOWNLOADER):
                 direct = True
                 downloaded_file = await loop.run_in_executor(None, video_dl)
             else:
@@ -421,11 +362,8 @@ class YouTubeAPI:
                     downloaded_file = stdout.decode().split("\n")[0]
                     direct = None
                 else:
-                    return"""
+                    return
         else:
             direct = True
-            # downloaded_file = await loop.run_in_executor(None, audio_dl)
-            downloaded_file = await loop.run_in_executor(
-                None, lambda: asyncio.run(api_download(vidid))
-            )
+            downloaded_file = await loop.run_in_executor(None, audio_dl)
         return downloaded_file, direct
